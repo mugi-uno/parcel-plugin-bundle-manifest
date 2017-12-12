@@ -3,19 +3,19 @@ Parcel plugin for generating an bundle manifest.
 Usage
 =======
 
-1. install
+### install
 
 ```
-npm install --save-dev parcel-plugin-package-manifest
+npm install --save-dev parcel-plugin-bundle-manifest
 ```
 
-2. build
+### build
 
 ```
 parcel build entry.js
 ```
 
-3. output
+### output
 
 output manifest file to same directory as the bundle file.
 
