@@ -5,6 +5,11 @@ const fs = require('fs');
 module.exports = function (bundler) {
   const logger = bundler.logger;
 
+  /**
+   * Read the paths already registered within the manifest.json
+   * @param {string} path 
+   * @returns {Object}
+   */
   const readManifestJson = (path) => {
     if (!fs.existsSync(path)) {
       logger.status('✨', 'create manifest file');
@@ -21,30 +26,32 @@ module.exports = function (bundler) {
     }
   };
 
+  /**
+   * Feed the manifest exploring childBundles recursively
+   * @param {Bundle} bundle 
+   * @param {Object} manifestValue 
+   * @param {string} publicURL 
+   */
+  const feedManifestValue = (bundle, manifestValue, publicURL) => {
+    let output = path.join(publicURL, path.basename(bundle.name));
+    let input = bundle.entryAsset ? bundle.entryAsset.basename : bundle.assets.values().next().value.basename;
+    manifestValue[input] = output;
+    logger.status('✓', `  bundle : ${input} => ${output}`);
+    bundle.childBundles.forEach(function (bundle) {
+      feedManifestValue(bundle, manifestValue, publicURL);
+    });
+  }
+
   bundler.on('bundled', (bundle) => {
-    const dir = path.dirname(bundle.name);
-
-    logger.status('📦', 'PackageManifestPlugin');
-    logger.status('📁', `     dir : ${dir}`);
-
-    const f = bundle.name;
-    const hash = hasha.fromFileSync(f, { algorithm: 'sha256' });
-    const ext = path.extname(f);
-    const basename = path.basename(f, ext);
-    const hashFile = path.join(dir, `${basename}-${hash}${ext}`);
-
-    logger.status('✓', `  bundle : ${bundle.name}`);
-    logger.status('✓', `        => ${hashFile}`);    
-
-    // create hash included bundle file
-    fs.createReadStream(f).pipe(fs.createWriteStream(path.resolve(dir, hashFile)));
+    const dir = bundle.entryAsset.options.outDir;
+    const publicURL = bundle.entryAsset.options.publicURL;
 
     const manifestPath = path.resolve(dir, 'parcel-manifest.json');
-
-    logger.status('📄', `manifest : ${manifestPath}`);
-
     const manifestValue = readManifestJson(manifestPath);
-    manifestValue[path.relative(dir, f)] = path.relative(dir, hashFile);
+
+    logger.status('📦', 'PackageManifestPlugin');
+    feedManifestValue(bundle, manifestValue, publicURL);
+    logger.status('📄', `manifest : ${manifestPath}`);
 
     fs.writeFileSync(manifestPath, JSON.stringify(manifestValue));
   });
