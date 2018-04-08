@@ -1,9 +1,9 @@
 const path = require('path');
 const hasha = require('hasha');
 const fs = require('fs');
+const logger = require('parcel-bundler/src/Logger');
 
 module.exports = function (bundler) {
-  const logger = bundler.logger;
 
   /**
    * Read the paths already registered within the manifest.json
