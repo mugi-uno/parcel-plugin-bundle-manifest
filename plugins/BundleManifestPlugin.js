@@ -53,6 +53,6 @@ module.exports = function (bundler) {
     feedManifestValue(bundle, manifestValue, publicURL);
     logger.status('📄', `manifest : ${manifestPath}`);
 
-    fs.writeFileSync(manifestPath, JSON.stringify(manifestValue));
+    fs.writeFileSync(manifestPath, JSON.stringify(manifestValue, null, 2));
   });
 };
