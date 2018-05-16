@@ -35,8 +35,10 @@ module.exports = function (bundler) {
   const feedManifestValue = (bundle, manifestValue, publicURL) => {
     let output = path.join(publicURL, path.basename(bundle.name));
     let input = bundle.entryAsset ? bundle.entryAsset.basename : bundle.assets.values().next().value.basename;
-    manifestValue[input] = output;
-    logger.status('✓', `  bundle : ${input} => ${output}`);
+    if(!manifestValue[input]) {
+      manifestValue[input] = output;
+      logger.status('✓', `  bundle : ${input} => ${output}`);
+    }
     bundle.childBundles.forEach(function (bundle) {
       feedManifestValue(bundle, manifestValue, publicURL);
     });
@@ -47,12 +49,14 @@ module.exports = function (bundler) {
     const publicURL = bundle.entryAsset.options.publicURL;
 
     const manifestPath = path.resolve(dir, 'parcel-manifest.json');
-    const manifestValue = readManifestJson(manifestPath);
+    const manifestValue = {}
 
     logger.status('📦', 'PackageManifestPlugin');
     feedManifestValue(bundle, manifestValue, publicURL);
     logger.status('📄', `manifest : ${manifestPath}`);
 
-    fs.writeFileSync(manifestPath, JSON.stringify(manifestValue, null, 2));
+    const oldManifestValue = readManifestJson(manifestPath);
+    const combinedManifest = Object.assign(oldManifestValue, manifestValue)
+    fs.writeFileSync(manifestPath, JSON.stringify(combinedManifest, null, 2));
   });
 };
