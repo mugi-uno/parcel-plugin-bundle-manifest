@@ -4,6 +4,7 @@ const fs = require('fs');
 const logger = require('parcel-bundler/src/Logger');
 
 module.exports = function (bundler) {
+  bundler.addAssetType('assets', require.resolve('./AssetListAsset'));
 
   /**
    * Read the paths already registered within the manifest.json
