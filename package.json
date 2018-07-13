@@ -12,8 +12,5 @@
   "license": "MIT",
   "peerDependencies": {
     "parcel-bundler": "^1.1.0"
-  },
-  "dependencies": {
-    "hasha": "^3.0.0"
   }
 }
