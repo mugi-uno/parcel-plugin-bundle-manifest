@@ -12,17 +12,17 @@ module.exports = function (bundler) {
    */
   const readManifestJson = (path) => {
     if (!fs.existsSync(path)) {
-      logger.status('✨', 'create manifest file');
+      logger.log('✨ create manifest file');
       return {};
     };
 
-    logger.status('🖊', 'update manifest file');
+    logger.log('🖊 update manifest file');
 
     try {
       return JSON.parse(fs.readFileSync(path, 'utf8'));
-    } catch(e) {
+    } catch (e) {
       logger.error('manifest file is invalid');
-      throw e; 
+      throw e;
     }
   };
 
@@ -35,9 +35,9 @@ module.exports = function (bundler) {
   const feedManifestValue = (bundle, manifestValue, publicURL) => {
     let output = path.join(publicURL, path.basename(bundle.name));
     let input = bundle.entryAsset ? bundle.entryAsset.basename : bundle.assets.values().next().value.basename;
-    if(!manifestValue[input]) {
+    if (!manifestValue[input]) {
       manifestValue[input] = output;
-      logger.status('✓', `  bundle : ${input} => ${output}`);
+      logger.log(`✓  bundle : ${input} => ${output}`);
     }
     bundle.childBundles.forEach(function (bundle) {
       feedManifestValue(bundle, manifestValue, publicURL);
@@ -51,9 +51,9 @@ module.exports = function (bundler) {
     const manifestPath = path.resolve(dir, 'parcel-manifest.json');
     const manifestValue = {}
 
-    logger.status('📦', 'PackageManifestPlugin');
+    logger.log('📦 PackageManifestPlugin');
     feedManifestValue(bundle, manifestValue, publicURL);
-    logger.status('📄', `manifest : ${manifestPath}`);
+    logger.success(`📄 manifest : ${manifestPath}`);
 
     const oldManifestValue = readManifestJson(manifestPath);
     const combinedManifest = Object.assign(oldManifestValue, manifestValue)
