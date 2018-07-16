@@ -1,5 +1,7 @@
 Parcel plugin for generating an bundle manifest.
 
+![](https://travis-ci.org/mugi-uno/parcel-plugin-bundle-manifest.svg?branch=master)
+
 Usage
 ========
 
