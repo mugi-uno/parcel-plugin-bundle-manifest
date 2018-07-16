@@ -4,3 +4,5 @@ node_js:
 install:
   - cd spec
   - yarn install --pure-lockfile
+notifications:
+  email: false
