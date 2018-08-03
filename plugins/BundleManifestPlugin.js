@@ -33,8 +33,8 @@ module.exports = function (bundler) {
   const feedManifestValue = (bundle, manifestValue, publicURL) => {
     let output = path.join(publicURL, path.basename(bundle.name));
     const input = 
-      bundle.entryAsset ? bundle.entryAsset.basename : 
-      bundle.assets.size ? bundle.assets.values().next().value.basename : 
+      bundle.entryAsset ? bundle.entryAsset.relativeName : 
+      bundle.assets.size ? bundle.assets.values().next().value.relativeName : 
       null;
     if(input && !manifestValue[input]) {
       manifestValue[input] = output;
