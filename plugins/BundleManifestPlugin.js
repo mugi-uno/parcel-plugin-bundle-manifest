@@ -32,6 +32,11 @@ module.exports = function (bundler) {
    */
   const feedManifestValue = (bundle, manifestValue, publicURL) => {
     let output = path.join(publicURL, path.basename(bundle.name));
+
+    if(isServiceWorkerFile(output)) {
+      return;
+    }
+
     const input = 
       bundle.entryAsset ? bundle.entryAsset.basename : 
       bundle.assets.size ? bundle.assets.values().next().value.basename : 
@@ -61,3 +66,10 @@ module.exports = function (bundler) {
     fs.writeFileSync(manifestPath, JSON.stringify(combinedManifest, null, 2));
   });
 };
+
+function isServiceWorkerFile(output) {
+  const commonServiceWorkerFilenames = ["service-worker.js", "serviceWorker.js", "sw.js"];
+
+  return commonServiceWorkerFilenames
+    .some(serviceWorkerName => output.endsWith(serviceWorkerName)) 
+}
