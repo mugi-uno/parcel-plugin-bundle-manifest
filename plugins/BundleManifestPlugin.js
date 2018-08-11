@@ -38,8 +38,8 @@ module.exports = function (bundler) {
     }
 
     const input = 
-      bundle.entryAsset ? bundle.entryAsset.basename : 
-      bundle.assets.size ? bundle.assets.values().next().value.basename : 
+      bundle.entryAsset ? bundle.entryAsset.relativeName : 
+      bundle.assets.size ? bundle.assets.values().next().value.relativeName : 
       null;
     if(input && !manifestValue[input]) {
       manifestValue[input] = output;
@@ -51,8 +51,14 @@ module.exports = function (bundler) {
   }
 
   bundler.on('bundled', (bundle) => {
-    const dir = bundle.entryAsset.options.outDir;
-    const publicURL = bundle.entryAsset.options.publicURL;
+    bundler.options.entryFiles.length > 1
+      ? bundle.childBundles.forEach(entryPointHandler)
+      : entryPointHandler(bundle);
+  });
+
+  function entryPointHandler(bundle) {
+    const dir = bundler.options.outDir;
+    const publicURL = bundler.options.publicURL;
 
     const manifestPath = path.resolve(dir, 'parcel-manifest.json');
     const manifestValue = {}
@@ -64,7 +70,7 @@ module.exports = function (bundler) {
     const oldManifestValue = readManifestJson(manifestPath);
     const combinedManifest = Object.assign(oldManifestValue, manifestValue)
     fs.writeFileSync(manifestPath, JSON.stringify(combinedManifest, null, 2));
-  });
+  }
 };
 
 function isServiceWorkerFile(output) {
