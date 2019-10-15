@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const url = require('url');
 
 module.exports = function (bundler) {
 
@@ -31,7 +32,7 @@ module.exports = function (bundler) {
    * @param {string} publicURL 
    */
   const feedManifestValue = (bundle, manifestValue, publicURL) => {
-    let output = path.join(publicURL, path.basename(bundle.name));
+    let output = url.resolve(publicURL, path.basename(bundle.name));
 
     if(isServiceWorkerFile(output)) {
       return;
@@ -58,7 +59,9 @@ module.exports = function (bundler) {
 
   function entryPointHandler(bundle) {
     const dir = bundler.options.outDir;
-    const publicURL = bundler.options.publicURL;
+    const publicURL = bundler.options.publicURL.endsWith('/')
+      ? bundler.options.publicURL
+      : bundler.options.publicURL + '/';
 
     const manifestPath = path.resolve(dir, 'parcel-manifest.json');
     const manifestValue = {}
