@@ -10,7 +10,14 @@
   "repository": "https://github.com/mugi-uno/parcel-plugin-bundle-manifest.git",
   "author": "mugi-uno <mugi.uno@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "test": "jest --silent ./spec"
+  },
   "peerDependencies": {
     "parcel-bundler": "^1.1.0"
+  },
+  "devDependencies": {
+    "jest": "^25.0.0",
+    "parcel-bundler": "^1.12.4"
   }
 }
